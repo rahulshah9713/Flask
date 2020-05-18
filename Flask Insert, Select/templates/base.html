@@ -1,9 +1,14 @@
 {% extends 'bootstrap/base.html' %}
 {% block title %}
-    My Project
+    Submit Form
 {% endblock %}
+
+{% block navbar %}
+    {% include '_navbar.html' %}
+{% endblock %}
+
 {% block content %}
-    {% block body %}
+    {% block sub_content %}
         From BASE
     {% endblock %}
 {% endblock %}
