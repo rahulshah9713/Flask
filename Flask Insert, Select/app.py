@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, flash
 from flask_bootstrap import Bootstrap
 from flask_mysqldb import MySQL
 import yaml
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -11,6 +12,7 @@ app.config['MYSQL_USER'] = db['mysql_user']
 app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor' #Fetch as dictionary from sql database
+app.config['SECRET_KEY'] = os.urandom(24)
 
 mysql = MySQL(app)
 Bootstrap(app)
@@ -18,13 +20,17 @@ Bootstrap(app)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if(request.method == 'POST'):
-        form = request.form
-        # name = generate_password_hash(form['name'])
-        name = form['name']
-        age = form['age']
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO employee(name, age) VALUES(%s, %s)", (name, age))
-        mysql.connection.commit()
+        try:
+            form = request.form
+            # name = generate_password_hash(form['name'])
+            name = form['name']
+            age = form['age']
+            cur = mysql.connection.cursor()
+            cur.execute("INSERT INTO employee(name, age) VALUES(%s, %s)", (name, age))
+            mysql.connection.commit()
+            flash('Successfully inserted data', 'success')
+        except:
+            flash('Failed to insert data', 'danger')
     return render_template('index.html')
 
 @app.route('/employees')
